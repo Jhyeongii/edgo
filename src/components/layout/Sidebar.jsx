@@ -1,7 +1,11 @@
 // src/components/layout/Sidebar.jsx
 
 import React from 'react';
-import { FileText, MessageSquareText, Globe, Settings, Users, Gem } from 'lucide-react';
+import { 
+    FileText, MessageSquareText, Globe, 
+    Settings, Users, Gem, 
+    Sparkles // 🚨 이 부분이 추가되었는지 확인
+} from 'lucide-react';
 import { cn } from '../../lib/utils'; // Tailwind CSS 클래스 유틸리티
 
 export default function Sidebar() {
