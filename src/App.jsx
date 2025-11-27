@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Sidebar from './components/layout/Sidebar';
-import PDFTools from './page/PDFTools';
+import PDFTools from './page/PDFTools.jsx';
 
 export default function App() { // 🚨 1. "export default function App()" 이 구문이 정확해야 합니다.
     return (

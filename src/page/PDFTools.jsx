@@ -1,42 +1,88 @@
 // src/page/PDFTools.jsx
 
 import React, { useState, useMemo } from 'react';
-import { base44 } from '../api/base44Client';
+import { base44 } from '../api/base44Client.js';
 
-import Button from "../components/ui/Button"; 
-import Textarea from "../components/ui/Textarea"; 
+// 🚨 확장자가 .jsx로 변경되었을 것으로 가정합니다.
+import Button from "../components/ui/Button.jsx"; 
+import Textarea from "../components/ui/Textarea.jsx"; 
 
 import { 
-    FileText, Upload, Loader2, Sparkles, // Sparkles는 이제 Sidebar에서 사용
+    FileText, Upload, Loader2, Sparkles, 
     FileSearch, BookOpen, ListChecks, MessageSquare,
     Copy, Check, XCircle
 } from 'lucide-react';
 import { cn } from "../lib/utils.js";
 import ReactMarkdown from 'react-markdown';
 
-// ... (analysisTypes 배열은 동일)
+// analysisTypes 배열 (예시)
+const analysisTypes = [
+    { id: 'summary', label: '요약 및 핵심 추출', prompt: '문서의 내용을 간결하게 요약하고 핵심 내용을 추출해 주세요.', icon: BookOpen },
+    { id: 'qna', label: 'Q&A 생성', prompt: '문서의 내용에 기반한 질문과 답변을 5개 생성해 주세요.', icon: MessageSquare },
+    { id: 'checklist', label: '실행 목록 생성', prompt: '문서에서 즉시 실행 가능한 행동 항목(Actionable Checklist)을 5가지 생성해 주세요.', icon: ListChecks },
+];
 
 export default function PDFTools() {
-    // ... (모든 useState 상태 및 핸들러 함수는 동일)
+    // 🚨 ReferenceError를 해결하기 위해 누락된 상태들을 모두 정의합니다.
+    const [file, setFile] = useState(null);
+    const [fileUrl, setFileUrl] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [result, setResult] = useState('');
+    const [copied, setCopied] = useState(false);
+
+    // 🚨 문제의 원인이었던 error 변수 상태
+    const [error, setError] = useState(null); 
+    const [selectedType, setSelectedType] = useState(analysisTypes[0].id);
+    const [customPrompt, setCustomPrompt] = useState('');
+
+    const currentTypePrompt = useMemo(() => {
+        const type = analysisTypes.find(t => t.id === selectedType);
+        return type ? type.prompt : analysisTypes[0].prompt;
+    }, [selectedType]);
+    
+    // 임시 핸들러 (에러 방지용)
+    const handleReset = () => {
+        setFile(null);
+        setFileUrl('');
+        setResult('');
+        setError(null);
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setFileUrl('temp-url-for-analysis'); // 실제 업로드 로직 필요
+        }
+    };
+
+    const handleAnalyze = async () => {
+        if (!fileUrl) return setError("PDF 파일을 먼저 업로드해주세요.");
+        if (isAnalyzing) return;
+
+        setError(null);
+        setIsAnalyzing(true);
+        setResult('');
+
+        // 여기에 실제 API 호출 로직을 구현해야 합니다.
+        setTimeout(() => {
+            const prompt = customPrompt || currentTypePrompt;
+            setResult(`**[${prompt} 요청에 대한 가상 분석 결과입니다.]**\n\nTailwind CSS와 React 빌드 에러를 모두 해결하신 것을 축하드립니다! 이제는 실제 비즈니스 로직에 집중할 수 있습니다.`);
+            setIsAnalyzing(false);
+        }, 2000);
+    };
+    
+    const handleCopy = () => {
+        if (result) {
+            navigator.clipboard.writeText(result);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     return (
-        // 🚨 최상위 div의 스타일 변경: min-h-screen, max-w-5xl mx-auto px-4 py-8 제거
-        // 이제 이 컴포넌트 자체는 레이아웃에 직접적인 영향을 주지 않고 콘텐츠만 표현합니다.
         <div className="w-full h-full"> 
-            {/* 🚨 기존 PDFTools의 상단 헤더 부분 삭제 (App.jsx의 디자인 이미지와 일치시키기 위해) */}
-            {/* <div className="mb-10">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-700 text-sm font-medium mb-4">
-                    <FileText className="w-4 h-4" />
-                    <span>PDF 도구</span>
-                </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-                    PDF 문서 <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-pink-600">분석</span>
-                </h1>
-                <p className="text-slate-500 text-lg">
-                    PDF를 업로드하고 AI로 요약, 분석, Q&A를 생성하세요
-                </p>
-            </div> */}
-            
             {/* 💡 새로운 상단 헤더 (GPT-4에게 질문하세요) */}
             <div className="mb-8 text-center bg-white p-6 rounded-2xl shadow-sm">
                 <div className="w-16 h-16 flex items-center justify-center bg-purple-100 rounded-full mx-auto mb-4">
