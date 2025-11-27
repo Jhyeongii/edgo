@@ -1,36 +1,28 @@
 // src/api/base44Client.js
-// API 클라이언트 모킹 (실제 API 로직은 서버에 있음)
 
+// 실제 base44 SDK를 설치하고 불러오는 코드가 필요합니다.
+// 예시로, 'base44'라는 가상의 객체를 export 합니다.
+
+// 실제 사용 시: 
+// import Base44 from '@base44/sdk';
+// export const base44 = new Base44({ apiKey: process.env.REACT_APP_BASE44_API_KEY });
+
+// 현재 프로젝트를 위한 모의(Mock) 객체
 export const base44 = {
-  integrations: {
-    Core: {
-      UploadFile: async ({ file }) => {
-        console.log(`[MOCK API] Uploading file: ${file.name}`);
-        return { file_url: `http://mock-file-url.com/${file.name}` };
-      },
-      AnalyzeFile: async ({ file_url, analysis_type, model }) => {
-        console.log(`[MOCK API] Analyzing file: ${file_url} with ${model}`);
-        await new Promise(resolve => setTimeout(resolve, 2000)); // 2초 대기 모킹
-        return {
-          result: `[${analysis_type.toUpperCase()} 결과] Mock 응답입니다. 실제 API를 연결하면 여기에 분석 내용이 표시됩니다.`,
-        };
-      },
+    integrations: {
+        Core: {
+            // 파일을 업로드하고 URL을 반환한다고 가정
+            UploadFile: async ({ file }) => {
+                // 실제 업로드 로직 대신 더미 URL 반환
+                console.log(`Uploading file: ${file.name}`);
+                return { file_url: `https://dummy-url.com/${file.name}` };
+            },
+            // LLM을 호출하고 결과를 반환한다고 가정
+            InvokeLLM: async ({ prompt, file_urls }) => {
+                console.log(`Invoking LLM with prompt: ${prompt}`);
+                // 실제 LLM 응답 대신 더미 결과 반환
+                return "## AI 분석 결과\n\n요청하신 PDF 분석이 성공적으로 완료되었습니다. 주요 내용은 다음과 같습니다:\n\n* 핵심 주제: 프로젝트 설정 및 배포\n* 해결 과제: 파일 Import 방식 및 Netlify 빌드 설정";
+            },
+        },
     },
-    AI: {
-      Chat: async ({ model, messages, system_prompt }) => {
-        console.log(`[MOCK API] Chat with ${model}`);
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5초 대기 모킹
-        return {
-          response: `${model}의 Mock 응답입니다. 질문에 대한 답변이 여기에 표시됩니다.`,
-        };
-      },
-      Translate: async ({ source_lang, target_lang, text }) => {
-        console.log(`[MOCK API] Translating from ${source_lang} to ${target_lang}`);
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5초 대기 모킹
-        return {
-          translated_text: `[${source_lang.toUpperCase()} -> ${target_lang.toUpperCase()} 번역 결과] ${text} (Mock)`,
-        };
-      }
-    }
-  }
 };
