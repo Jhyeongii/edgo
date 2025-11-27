@@ -29,7 +29,7 @@ export default function PDFTools() {
     const [selectedType, setSelectedType] = useState('summary');
     const [customPrompt, setCustomPrompt] = useState(''); // 💡 추가: 커스텀 프롬프트 상태
     const [result, setResult] = useState('');
-    const [copied, setCopied] = useState = useState(false);
+    const [copied, setCopied] = useState(false);
     const [error, setError] = useState(null); // 💡 추가: 에러 상태
 
     // 💡 useMemo를 사용하여 현재 선택된 분석 유형의 프롬프트를 계산
