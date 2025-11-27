@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 import { User, Bot, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 

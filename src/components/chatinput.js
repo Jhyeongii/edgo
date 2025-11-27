@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Send, Loader2 } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 export default function ChatInput({ onSend, isLoading, placeholder }) {
   const [input, setInput] = useState('');
