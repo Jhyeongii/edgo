@@ -4,10 +4,10 @@ import React from 'react';
 import Sidebar from './components/layout/Sidebar';
 import PDFTools from './page/PDFTools';
 
-export default function App() {
+export default function App() { // 🚨 1. "export default function App()" 이 구문이 정확해야 합니다.
     return (
-        // 🚨 이 min-h-screen이 반드시 있어야 합니다.
-        <div className="flex min-h-screen bg-gray-50 text-gray-800"> 
+        // 🚨 2. 최상위 div와 클래스명이 정확해야 합니다.
+        <div className="flex min-h-screen bg-gray-50 text-gray-800">
             {/* 왼쪽 사이드바 */}
             <Sidebar />
 

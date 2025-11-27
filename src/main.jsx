@@ -2,11 +2,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import './index.css'; // 이 경로가 정확해야 Tailwind CSS가 적용됩니다.
+import App from './App.jsx'; // 🚨 App 컴포넌트가 올바르게 import 되었는지 확인
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <App /> {/* 🚨 App 컴포넌트가 올바르게 사용되었는지 확인 */}
   </React.StrictMode>,
 );
