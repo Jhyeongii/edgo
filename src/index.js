@@ -4,21 +4,19 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// 페이지 및 레이아웃 컴포넌트들을 불러옵니다.
-import Layout from './layout'; 
+// *오류 해결: 경로를 './layout/Layout'으로 정확히 지정
+import Layout from './layout/Layout'; 
 import Home from './page/Home'; 
 import PDFtools from './page/PDFtools'; 
 import Translate from './page/translate'; 
 
 // [중요] 필요한 스타일시트가 있다면 여기에 추가하세요 (예: import './index.css';)
 
-// 앱의 전체 라우팅 구조를 정의하는 컴포넌트
 function App() {
   return (
     <BrowserRouter>
       <Layout>
         <Routes>
-          {/* URL 경로와 페이지 컴포넌트를 연결합니다. */}
           <Route path="/" element={<Home />} />
           <Route path="/pdftools" element={<PDFtools />} />
           <Route path="/translate" element={<Translate />} />
@@ -28,7 +26,6 @@ function App() {
   );
 }
 
-// React 앱을 HTML의 'root' 엘리먼트에 마운트합니다.
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
