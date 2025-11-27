@@ -1,16 +1,15 @@
 // src/page/PDFTools.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { base44 } from '../api/base44Client';
 
-// 🚨 Default Export 방식에 맞게 중괄호 없이 Import
 import Button from "../components/ui/Button"; 
 import Textarea from "../components/ui/Textarea"; 
 
 import { 
     FileText, Upload, Loader2, Sparkles, 
     FileSearch, BookOpen, ListChecks, MessageSquare,
-    Download, Copy, Check
+    Copy, Check, XCircle
 } from 'lucide-react';
 import { cn } from "../lib/utils";
 import ReactMarkdown from 'react-markdown';
@@ -28,24 +27,45 @@ export default function PDFTools() {
     const [isUploading, setIsUploading] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [selectedType, setSelectedType] = useState('summary');
+    const [customPrompt, setCustomPrompt] = useState(''); // 💡 추가: 커스텀 프롬프트 상태
     const [result, setResult] = useState('');
-    const [copied, setCopied] = useState(false);
+    const [copied, setCopied] = useState = useState(false);
+    const [error, setError] = useState(null); // 💡 추가: 에러 상태
+
+    // 💡 useMemo를 사용하여 현재 선택된 분석 유형의 프롬프트를 계산
+    const currentTypePrompt = useMemo(() => {
+        return analysisTypes.find(t => t.id === selectedType)?.prompt || '';
+    }, [selectedType]);
+
+    // 💡 새로운 핸들러: 파일 업로드 인풋을 초기화하는 함수
+    const handleReset = () => {
+        setFile(null);
+        setFileUrl('');
+        setResult('');
+        setError(null);
+        setCustomPrompt('');
+        setSelectedType('summary');
+        // 파일 인풋의 value를 초기화 (React에서 DOM 요소에 접근)
+        const fileInput = document.getElementById('pdf-upload-input');
+        if (fileInput) fileInput.value = '';
+    };
 
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         if (!selectedFile) return;
 
+        handleReset(); // 기존 상태 초기화
         setFile(selectedFile);
         setIsUploading(true);
-        setResult('');
+        setError(null);
 
         try {
-            // base44Client가 Named Export라고 가정하고, 객체에서 file_url을 구조 분해합니다.
             const { file_url } = await base44.integrations.Core.UploadFile({ file: selectedFile });
             setFileUrl(file_url);
-        } catch (error) {
-            console.error("File upload failed:", error);
-            // 사용자에게 오류를 알리는 로직 추가 가능
+        } catch (err) {
+            console.error("File upload failed:", err);
+            setError("파일 업로드에 실패했습니다. (콘솔 확인)");
+            setFile(null);
         } finally {
             setIsUploading(false);
         }
@@ -55,17 +75,26 @@ export default function PDFTools() {
         if (!fileUrl) return;
 
         setIsAnalyzing(true);
-        const type = analysisTypes.find(t => t.id === selectedType);
-
+        setResult('');
+        setError(null);
+        
+        // 최종 프롬프트: 유형 프롬프트와 사용자 정의 프롬프트를 조합
+        const finalPrompt = customPrompt 
+            ? customPrompt 
+            : currentTypePrompt;
+        
+        const fullPrompt = `다음은 PDF 문서의 내용입니다. ${finalPrompt}\n\n결과는 Markdown 형식으로 작성하고, 한국어로 답변해주세요.`;
+        
         try {
             const response = await base44.integrations.Core.InvokeLLM({
-                prompt: `다음은 PDF 문서의 내용입니다. ${type.prompt}\n\n한국어로 답변해주세요.`,
+                prompt: fullPrompt,
                 file_urls: [fileUrl]
             });
+
             setResult(response);
-        } catch (error) {
-            console.error("Analysis failed:", error);
-            setResult("분석에 실패했습니다. API 키 또는 파일 url을 확인해주세요.");
+        } catch (err) {
+            console.error("Analysis failed:", err);
+            setError(`분석 중 오류가 발생했습니다: ${err.message || 'API 호출 실패'}`);
         } finally {
             setIsAnalyzing(false);
         }
@@ -94,24 +123,42 @@ export default function PDFTools() {
                     </p>
                 </div>
 
+                {error && (
+                    <div className="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50 flex items-center gap-3">
+                        <XCircle className="w-5 h-5 flex-shrink-0" />
+                        <span className="font-medium">{error}</span>
+                    </div>
+                )}
+
                 <div className="grid lg:grid-cols-2 gap-6">
-                    {/* Upload Section */}
+                    {/* Upload & Prompt Section */}
                     <div className="space-y-6">
                         {/* File Upload */}
-                        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm">
-                            <h3 className="font-semibold text-slate-800 mb-4">파일 업로드</h3>
+                        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm relative">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-semibold text-slate-800">파일 업로드</h3>
+                                {/* 💡 추가: 파일 초기화 버튼 */}
+                                {file && (
+                                    <Button onClick={handleReset} className="bg-transparent hover:bg-slate-50 text-slate-500 py-1 px-3 h-auto rounded-xl">
+                                        <XCircle className="w-4 h-4 mr-1" /> 파일 지우기
+                                    </Button>
+                                )}
+                            </div>
                             
                             <label className={cn(
                                 "flex flex-col items-center justify-center w-full h-48 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300",
                                 file 
                                     ? "border-rose-300 bg-rose-50/50" 
-                                    : "border-slate-200 hover:border-rose-300 hover:bg-rose-50/30"
+                                    : "border-slate-200 hover:border-rose-300 hover:bg-rose-50/30",
+                                isUploading && "pointer-events-none opacity-70"
                             )}>
                                 <input
+                                    id="pdf-upload-input"
                                     type="file"
                                     accept=".pdf"
                                     onChange={handleFileChange}
                                     className="hidden"
+                                    disabled={isUploading}
                                 />
                                 {isUploading ? (
                                     <Loader2 className="w-10 h-10 text-rose-500 animate-spin" />
@@ -133,12 +180,6 @@ export default function PDFTools() {
                                     </div>
                                 )}
                             </label>
-                            
-                            {/* 🚨 Textarea 컴포넌트 사용 예시 (필요하다면 주석 해제) */}
-                            {/* <Textarea 
-                                placeholder="여기에 추가 프롬프트를 입력하세요 (선택 사항)"
-                                rows={3}
-                            /> */}
                         </div>
 
                         {/* Analysis Type */}
@@ -150,21 +191,24 @@ export default function PDFTools() {
                                     return (
                                         <button
                                             key={type.id}
-                                            onClick={() => setSelectedType(type.id)}
+                                            onClick={() => {
+                                                setSelectedType(type.id);
+                                                setCustomPrompt(''); // 유형 선택 시 커스텀 프롬프트 초기화
+                                            }}
                                             className={cn(
                                                 "flex items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-200",
-                                                selectedType === type.id
+                                                selectedType === type.id && !customPrompt // 커스텀 프롬프트가 없을 때만 활성화
                                                     ? "border-rose-400 bg-rose-50"
                                                     : "border-slate-200 hover:border-slate-300"
                                             )}
                                         >
                                             <Icon className={cn(
                                                 "w-5 h-5",
-                                                selectedType === type.id ? "text-rose-600" : "text-slate-500"
+                                                selectedType === type.id && !customPrompt ? "text-rose-600" : "text-slate-500"
                                             )} />
                                             <span className={cn(
-                                                "font-medium text-sm",
-                                                selectedType === type.id ? "text-rose-700" : "text-slate-700"
+                                                "font-medium text-sm text-left",
+                                                selectedType === type.id && !customPrompt ? "text-rose-700" : "text-slate-700"
                                             )}>
                                                 {type.label}
                                             </span>
@@ -172,25 +216,59 @@ export default function PDFTools() {
                                     );
                                 })}
                             </div>
-
-                            <Button
-                                onClick={handleAnalyze}
-                                disabled={!fileUrl || isAnalyzing}
-                                className="w-full mt-6 h-12 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 shadow-lg shadow-rose-500/30"
-                            >
-                                {isAnalyzing ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                        분석 중...
-                                    </>
-                                ) : (
-                                    <>
-                                        <FileSearch className="w-5 h-5 mr-2" />
-                                        분석 시작
-                                    </>
-                                )}
-                            </Button>
                         </div>
+
+                        {/* 💡 추가: 커스텀 프롬프트 입력 영역 */}
+                        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm">
+                            <h3 className="font-semibold text-slate-800 mb-4 flex justify-between items-center">
+                                <span>나만의 분석 요청 (선택)</span>
+                                {customPrompt && (
+                                    <button 
+                                        onClick={() => setSelectedType(analysisTypes[0].id)}
+                                        className="text-xs text-rose-500 hover:text-rose-600 font-medium"
+                                    >
+                                        기본 유형으로 되돌리기
+                                    </button>
+                                )}
+                            </h3>
+                            <Textarea
+                                placeholder={customPrompt ? customPrompt : `기본 요청: ${currentTypePrompt}`}
+                                value={customPrompt}
+                                onChange={(e) => {
+                                    setCustomPrompt(e.target.value);
+                                    if (e.target.value.trim() !== '') {
+                                        setSelectedType(''); // 커스텀 프롬프트 입력 시 유형 선택 해제
+                                    } else {
+                                        setSelectedType(analysisTypes[0].id); // 비어있으면 기본 유형으로
+                                    }
+                                }}
+                                rows={5}
+                                className={cn(
+                                    customPrompt && "border-4 border-dashed border-rose-300 bg-rose-50/50"
+                                )}
+                            />
+                            <p className="text-sm text-slate-500 mt-2">
+                                {!customPrompt ? `현재 적용될 요청: ${currentTypePrompt}` : `사용자 정의 요청이 적용됩니다.`}
+                            </p>
+                        </div>
+                        
+                        <Button
+                            onClick={handleAnalyze}
+                            disabled={!fileUrl || isAnalyzing || isUploading}
+                            className="w-full h-12 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 shadow-lg shadow-rose-500/30"
+                        >
+                            {isAnalyzing ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                    AI가 문서를 분석 중입니다...
+                                </>
+                            ) : (
+                                <>
+                                    <FileSearch className="w-5 h-5 mr-2" />
+                                    분석 시작
+                                </>
+                            )}
+                        </Button>
                     </div>
 
                     {/* Result Section */}
