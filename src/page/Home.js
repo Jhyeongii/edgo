@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { createPageUrl } from '@/createPageUrl';
 import { base44 } from '@/api/base44Client';
-import ModelSelector from '@/components/chat/ModelSelector';
-import ChatMessage from '@/components/chat/ChatMessage';
-import ChatInput from '@/components/chat/ChatInput';
+import ModelSelector from '@/components/ModelSelector';
+import ChatMessage from '@/components/ChatMessage';
+import ChatInput from '@/components/ChatInput';
 import { FileText, Languages, Sparkles } from 'lucide-react';
 import { cn } from "@/lib/utils";
 

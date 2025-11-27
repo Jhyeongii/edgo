@@ -1,10 +1,11 @@
-// src/index.js (새로운 앱 시작 파일)
+// src/index.js (앱 시작 파일, 새로 생성/덮어쓰기)
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // 페이지 및 레이아웃 컴포넌트들을 불러옵니다.
+// 경로 수정: src/layout/layout.js ➡️ src/layout.js (업로드된 파일 이름 기준)
 import Layout from './layout'; 
 import Home from './page/Home'; 
 import PDFtools from './page/PDFtools'; 
