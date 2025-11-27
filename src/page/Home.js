@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/createPageUrl';
-import { base44 } from '@/api/base44Client';
-import ModelSelector from '@/components/ModelSelector';
-import ChatMessage from '@/components/ChatMessage';
-import ChatInput from '@/components/ChatInput';
+import { createPageUrl } from '../createPageUrl';
+import { base44 } from '../api/base44Client';
+import ModelSelector from '../components/ModelSelector';
+import ChatMessage from '../components/ChatMessage';
+import ChatInput from '../components/ChatInput';
 import { FileText, Languages, Sparkles } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 export default function Home() {
   const [selectedModel, setSelectedModel] = useState('gpt');

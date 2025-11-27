@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { base44 } from '../api/base44Client';
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
 import { 
   Languages, ArrowRightLeft, Loader2, Copy, Check, 
   Volume2, FileUp, Sparkles
 } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 const languages = [
   { code: 'ko', name: '한국어', flag: '🇰🇷' },

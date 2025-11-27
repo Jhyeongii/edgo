@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/createPageUrl';
+import { createPageUrl } from '../createPageUrl';
 import { ChevronRight } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 export default function ToolCard({ icon: Icon, title, description, page, color, gradient }) {
   return (

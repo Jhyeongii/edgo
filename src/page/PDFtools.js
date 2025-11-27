@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { base44 } from '../api/base44Client';
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
 import { 
   FileText, Upload, Loader2, Sparkles, 
   FileSearch, BookOpen, ListChecks, MessageSquare,
   Download, Copy, Check
 } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 import ReactMarkdown from 'react-markdown';
 
 const analysisTypes = [

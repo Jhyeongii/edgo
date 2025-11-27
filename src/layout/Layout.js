@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/createPageUrl';
+import { createPageUrl } from '../createPageUrl';
 import { Home, FileText, Languages, Sparkles } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 const navItems = [
   { name: 'Home', label: '홈', icon: Home },
