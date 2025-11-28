@@ -1,8 +1,5 @@
 {
   "name": "edgo",
   "pages_build_output_dir": "./dist",
-  "compatibility_date": "2025-11-28",
-  "site": {
-    "bucket": "./dist"
-  }
+  "compatibility_date": "2025-11-28"
 }
