@@ -1,5 +1,5 @@
 {
-  "name": "edgo-worker",
+  "name": "edgo",
   "compatibility_date": "2025-11-28",
   "main": "src/index.ts"  // 실제 Worker 파일 경로로 변경하세요
 }
